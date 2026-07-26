@@ -1,4 +1,12 @@
-"main": "Server.js",
-"scripts": {
-  "start": "node Server.js"
+{
+  "name": "card-wars-server",
+  "version": "1.0.0",
+  "description": "Card Wars KFF Backend Server",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
 }
