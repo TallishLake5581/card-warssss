@@ -1,22 +1,13 @@
-const express = require('express');
-const app = express();
+// السماح بجميع الطلبات وتجنب خطأ 400
+app.use((req, res, next) => {
+    console.log("طلب قادم من اللعبة:", req.method, req.url);
+    next();
+});
 
-// للسماح بقراءة البيانات المعتادة (JSON و Forms)
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// الرد على أي طلب (GET أو POST أو غيره) وفي أي مسار
+// مسار شامل للبطولات (Deck Wars) لتأكيد الاتصال
 app.all('*', (req, res) => {
-    console.log(`Received request: ${req.method} ${req.url}`);
-    
-    // إرجاع استجابة ناجحة 200 OK
-    res.status(200).json({
-        status: "success",
-        message: "Server is online and responding correctly"
+    res.status(200).send({
+        status: "ok",
+        message: "Deck Wars Server Connected"
     });
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+    
