@@ -104,11 +104,40 @@ app.use((req, res, next) => {
 app.get('/manifest.json', (req, res) => {
     res.status(200).json(manifestData);
 });
+// تخزين مؤقت للمتصدرين داخل السيرفر
+let gameLeaderboard = [];
 
-// 3. مسار عام لجميع طلبات اللعبة والبطولات والـ CDN
+// 1. استقبال نقاط اللاعبين وتحديث المتصدرين
+app.post('/api/leaderboard/submit', (req, res) => {
+    const { playerId, username, score, tournamentId } = req.body;
+    if (!playerId || score === undefined) {
+        return res.status(400).json({ error: 'Invalid data' });
+    }
+    let player = gameLeaderboard.find(p => p.playerId === playerId && p.tournamentId === tournamentId);
+    if (player) {
+        if (score > player.score) player.score = score;
+    } else {
+        gameLeaderboard.push({ playerId, username, score, tournamentId });
+    }
+    gameLeaderboard.sort((a, b) => b.score - a.score);
+    res.json({ success: true });
+});
+
+// 2. إرسال قائمة المتصدرين للعبة
+app.get('/api/leaderboard/:tournamentId', (req, res) => {
+    const { tournamentId } = req.params;
+    const topPlayers = gameLeaderboard
+        .filter(p => p.tournamentId === tournamentId)
+        .slice(0, 50);
+    res.json(topPlayers);
+});
+
+// 3. المسار العام (يجب أن يبقى في النهاية تماماً)
 app.all('*', (req, res) => {
     res.status(200).send({
         status: "ok",
         message: "Deck Wars Server Connected"
     });
 });
+
+
