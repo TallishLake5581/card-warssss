@@ -5,28 +5,16 @@ const PORT = process.env.PORT || 8080;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// منع إعادة التوجيه وإلغاء أي فرض للـ HTTPS داخل الاستجابة
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', '*');
-    next();
-});
-
-// الرد المباشر على ملف الإصدار
-app.get('/persist/version.txt', (req, res) => {
-    res.status(200).type('text/plain').send('1.0.0');
-});
-
-app.get('/', (req, res) => {
-    res.status(200).send('Server is online');
-});
-
-// التعامل مع أي مسار آخر تطلبه اللعبة
+// استقبال أي طلب والرد عليه بنجاح مطلق
 app.all('*', (req, res) => {
-    res.status(200).send('OK');
+    res.status(200).send('1.0.0');
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on port ${PORT}`);
+const server = app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Secure Server is running on port ${PORT}`);
+});
+
+// منع إغلاق الاتصال المفاجئ عند مصافحة التشفير
+server.on('secureConnection', (socket) => {
+    socket.on('error', (err) => console.log('Socket error ignored'));
 });
