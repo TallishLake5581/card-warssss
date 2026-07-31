@@ -5,31 +5,26 @@ const PORT = process.env.PORT || 8080;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/', (req, res) => {
-    res.status(200).send('200 App server running');
-});
-
-app.get('/static/version.txt', (req, res) => {
-    res.status(200).send('1.0.0');
-});
-
-app.all('/account/preAuth/', (req, res) => {
-    res.status(200).json({
-        "status": "OK",
-        "userId": "marwan_admin",
-        "sessionId": "session_123456",
-        "isBanned": false
-    });
-});
-
-app.all('/time/', (req, res) => {
-    res.status(200).json({
-        "serverTime": Math.floor(Date.now() / 1000)
-    });
-});
-
+// استقبال أي نوع طلب على أي مسار وجعله يرد بنجاح تام
 app.all('*', (req, res) => {
-    res.status(200).json({ status: "success" });
+    console.log(`[طلب وارد] المسار: ${req.method} ${req.path}`);
+    
+    // إذا كان طلب للـ الإصدار
+    if (req.path.includes('version')) {
+        return res.status(200).send('1.0.0');
+    }
+    
+    // إذا كان طلب للوقت
+    if (req.path.includes('time')) {
+        return res.status(200).json({ "serverTime": Math.floor(Date.now() / 1000) });
+    }
+    
+    // الباقي يرد بصيغة JSON ناجحة
+    return res.status(200).json({
+        "status": "success",
+        "message": "OK",
+        "userId": "marwan_admin"
+    });
 });
 
 app.listen(PORT, () => {
