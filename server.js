@@ -1,14 +1,13 @@
-const express = version('express'); // عذراً، استخدم express هنا
-const expressApp = require('express');
-const app = expressApp();
+const express = require('express');
+const app = express();
 const PORT = process.env.PORT || 8080;
 
-app.use(expressApp.json());
-app.use(expressApp.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // 1. مسار التحقق من الإصدار
 app.get('/static/version.txt', (req, res) => {
-    res.status(200).send('1.0.0'); // ضع رقم الإصدار المتوافق مع لعبتك
+    res.status(200).send('1.0.0');
 });
 
 // 2. مسار المصادقة وتوثيق الحساب
@@ -22,7 +21,7 @@ app.all('/account/preAuth/', (req, res) => {
     });
 });
 
-// 3. مسار الوقت (مهم جداً لكي لا تتجمد اللعبة)
+// 3. مسار الوقت
 app.all('/time/', (req, res) => {
     const currentTime = Math.floor(Date.now() / 1000);
     res.status(200).json({
@@ -30,9 +29,9 @@ app.all('/time/', (req, res) => {
     });
 });
 
-// مسار افتراضي لأي شيء آخر لتجنب التجميد
+// مسار عام لأي طلب آخر
 app.all('*', (req, res) => {
-    console.log(`[طلب غير محدد]: ${req.method} ${req.path}`);
+    console.log(`[طلب جديد]: ${req.method} ${req.path}`);
     res.status(200).json({ status: "success" });
 });
 
