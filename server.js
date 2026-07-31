@@ -1,24 +1,41 @@
-const express = require('express');
-const app = express();
+const express = version('express'); // عذراً، استخدم express هنا
+const expressApp = require('express');
+const app = expressApp();
 const PORT = process.env.PORT || 8080;
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(expressApp.json());
+app.use(expressApp.urlencoded({ extended: true }));
 
-// الرد على الرابط الأساسي مثل السيرفر القديم تماماً
-app.get('/', (req, res) => {
-    res.status(200).send('200 App server running');
+// 1. مسار التحقق من الإصدار
+app.get('/static/version.txt', (req, res) => {
+    res.status(200).send('1.0.0'); // ضع رقم الإصدار المتوافق مع لعبتك
 });
 
-// استقبال أي طلب آخر من اللعبة والرد بالنجاح لكي لا تتجمد
-app.all('*', (req, res) => {
-    console.log(`[طلب جديد] المسار: ${req.method} ${req.path}`);
+// 2. مسار المصادقة وتوثيق الحساب
+app.all('/account/preAuth/', (req, res) => {
+    console.log('[+] تم طلب المصادقة (preAuth)');
     res.status(200).json({
-        status: "success",
-        message: "Connected to Marwan Server"
+        "status": "OK",
+        "userId": "marwan_admin",
+        "sessionId": "session_123456",
+        "isBanned": false
     });
 });
 
+// 3. مسار الوقت (مهم جداً لكي لا تتجمد اللعبة)
+app.all('/time/', (req, res) => {
+    const currentTime = Math.floor(Date.now() / 1000);
+    res.status(200).json({
+        "serverTime": currentTime
+    });
+});
+
+// مسار افتراضي لأي شيء آخر لتجنب التجميد
+app.all('*', (req, res) => {
+    console.log(`[طلب غير محدد]: ${req.method} ${req.path}`);
+    res.status(200).json({ status: "success" });
+});
+
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
