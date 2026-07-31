@@ -5,16 +5,20 @@ const PORT = process.env.PORT || 8080;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// استقبال أي طلب والرد عليه بنجاح مطلق
+// الرد على الرابط الأساسي مثل السيرفر القديم تماماً
+app.get('/', (req, res) => {
+    res.status(200).send('200 App server running');
+});
+
+// استقبال أي طلب آخر من اللعبة والرد بالنجاح لكي لا تتجمد
 app.all('*', (req, res) => {
-    res.status(200).send('1.0.0');
+    console.log(`[طلب جديد] المسار: ${req.method} ${req.path}`);
+    res.status(200).json({
+        status: "success",
+        message: "Connected to Marwan Server"
+    });
 });
 
-const server = app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Secure Server is running on port ${PORT}`);
-});
-
-// منع إغلاق الاتصال المفاجئ عند مصافحة التشفير
-server.on('secureConnection', (socket) => {
-    socket.on('error', (err) => console.log('Socket error ignored'));
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
