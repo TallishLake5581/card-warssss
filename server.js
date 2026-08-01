@@ -28,3 +28,13 @@ app.all('*', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
+
+// استقبال طلبات اللعبة للـ Game Data
+app.get('/persist/ua/game', (req, res) => {
+    res.status(200).json({ status: "ok", data: {} });
+});
+
+// استقبال طلبات الـ PreAuth
+app.get('/account/preAuth/', (req, res) => {
+    res.status(200).json({ status: "success", auth: true });
+});
