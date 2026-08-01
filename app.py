@@ -1,3 +1,4 @@
+import os
 from flask import Flask, request, jsonify
 import time
 
@@ -13,6 +14,7 @@ def version_check():
 
 @app.route('/account/preAuth/', methods=['GET', 'POST'])
 def pre_auth():
+    print("[+] تم طلب المصادقة (preAuth)")
     return jsonify({
         "status": "OK",
         "userId": "marwan_admin",
@@ -32,4 +34,6 @@ def catch_all(subpath):
     return jsonify({"status": "success", "message": "OK"}), 200
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    # قراءة المنفذ الذي يحدده Railway تلقائياً
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host='0.0.0.0', port=port)
